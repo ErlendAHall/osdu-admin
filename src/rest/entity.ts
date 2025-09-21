@@ -1,4 +1,4 @@
-export async function getEntity<T>(kind: string): Promise<T> {
+export async function getEntityRecord<T>(kind: string): Promise<T> {
   console.log("Fetching " + kind);
   return new Promise((resolve) => {
     setTimeout(async () => {
