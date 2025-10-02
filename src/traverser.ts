@@ -61,7 +61,6 @@ export async function collectValues(osduFields: OSDUField[]) {
 
   //TODO: write a copy to IndexedDB.
   const osduFieldsClone = structuredClone(osduFields);
-  console.log(record.data);
 
   osduFieldsClone.forEach((field) => {
     const identifier = field.identifier;
@@ -71,12 +70,9 @@ export async function collectValues(osduFields: OSDUField[]) {
       field.value = record[identifier];
     } else {
       // @ts-ignore
-      console.log(record.data[identifier]);
-      // @ts-ignore
       field.value = record.data[identifier];
     }
   });
 
-  console.log("%cosduFields: ", "color:#f0f;", osduFieldsClone);
   return osduFieldsClone;
 }

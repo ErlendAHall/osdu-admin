@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from "react";
+import {type ReactNode, useEffect, useMemo, useState} from "react";
 import {
   DatePicker,
   Input,
@@ -7,17 +7,29 @@ import {
   Tooltip,
 } from "@equinor/eds-core-react";
 import type { OSDUField } from "../types/form";
+import {useRecord, useSchema} from "./useIndexedDb.ts";
+import {collectNodesWithRequiredProps} from "../traverser.ts";
 
-/* Accepts a list of OSDU fields and returns a list of ReactNodes ready to be rendered in a HTML form.*/
-export function useFormGenerator(fields: OSDUField[]) {
-  console.log("%cfields: ", "color:#f0f;", fields);
-  const [formFields, setFormFields] = useState<ReactNode[]>([]);
-
+/* Accepts a kind and an identifier and creates a list of HTML form fields ready for DOM. */
+export function useFormGenerator(kind: string, identifier: string) {
+  const record = useRecord(identifier);
+  const schema = useSchema(kind);
+  const [osduFields, setOsduFields] = useState<OSDUField[]>([]);
+  const [htmlNodes, setHtmlNodes] = useState<ReactNode[]>([]);
+  
+  
+  /* When we have both schema and record, we can start mapping form fields. */
+    useMemo(() => {
+        if (!record || !schema) return;
+        collectNodesWithRequiredProps(schema).then((fields) => setOsduFields(fields))
+    }, [record, schema])
+  
+  
   useEffect(() => {
     const nodes: ReactNode[] = [];
     const tooltipDelay = 1000; //ms
 
-    fields.forEach((field, index) => {
+    osduFields.forEach((field, index) => {
       // Field is integer or number.
       if (field.type === "number" || field.type === "integer") {
         const id = `number-input-${index}`;
@@ -63,7 +75,7 @@ export function useFormGenerator(fields: OSDUField[]) {
       } else if (field.type === "boolean" && typeof field.value === "boolean") {
         const id = `boolean-input-${index}`;
         nodes.push(
-          <div>
+          <div key={id}>
             <Tooltip
               placement={"left"}
               enterDelay={tooltipDelay}
@@ -76,8 +88,8 @@ export function useFormGenerator(fields: OSDUField[]) {
       }
     });
 
-    setFormFields(nodes);
-  }, [fields]);
+    setHtmlNodes(nodes);
+  }, [osduFields]);
 
-  return formFields;
+  return htmlNodes;
 }
