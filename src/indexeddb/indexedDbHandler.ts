@@ -92,7 +92,7 @@ export class IndexedDbHandler {
 
   async openDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
-      let openRequest = globalThis.indexedDB.open(this.IDBIdentifier, 1);
+      const openRequest = globalThis.indexedDB.open(this.IDBIdentifier, 1);
 
       openRequest.onsuccess = (event: Event) => {
         console.group("IndexedDB");

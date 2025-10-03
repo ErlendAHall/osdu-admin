@@ -1,6 +1,6 @@
-import { osduAdminDb } from "../indexeddb/osduAdminDb.ts";
-import { useEffect, useState } from "react";
-import type { OSDURecord, OSDUSchema } from "../types/osdu.ts";
+import {useEffect, useState } from "react";
+import {osduAdminDb} from "../../indexeddb/osduAdminDb.ts";
+import type {OSDURecord, OSDUSchema} from "../../types/osdu.ts";
 
 /*
  * Provides a reference to a single OSDU record from IndexedDB.

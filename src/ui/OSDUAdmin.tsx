@@ -1,9 +1,9 @@
 import "./App.css";
-import { useFormGenerator } from "./useFormGenerator.tsx";
 import { Button, Paper, Tooltip } from "@equinor/eds-core-react";
 import { Tabs } from "@equinor/eds-core-react";
 import { useState } from "react";
 import {NewRecordPanel} from "./NewRecordPanel.tsx";
+import {useFormGenerator} from "./hooks/useFormGenerator.tsx";
 await import("../assets/seeder.ts");
 
 const mockId =
@@ -14,6 +14,7 @@ function OSDUAdmin() {
     "osdu:wks:master-data--BHARun:2.0.0",
     mockId
   );
+  
   const [activeTab, setActiveTab] = useState(0);
 
   return (
