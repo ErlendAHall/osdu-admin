@@ -1,6 +1,7 @@
 export type OSDUSchema = {
-    kind: string;
+  kind: string;
+  "x-osdu-schema-source": string;
 };
 export type OSDURecord = {
-    identifier: string
+  id: string;
 };

@@ -1,4 +1,4 @@
-import {type ReactNode, useEffect, useMemo, useState} from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import {
   DatePicker,
   Input,
@@ -7,8 +7,8 @@ import {
   Tooltip,
 } from "@equinor/eds-core-react";
 import type { OSDUField } from "../types/form";
-import {useRecord, useSchema} from "./useIndexedDb.ts";
-import {collectNodesWithRequiredProps} from "../traverser.ts";
+import { useRecord, useSchema } from "./useIndexedDb.ts";
+import { collectNodesWithRequiredProps } from "../traverser.ts";
 
 /* Accepts a kind and an identifier and creates a list of HTML form fields ready for DOM. */
 export function useFormGenerator(kind: string, identifier: string) {
@@ -16,15 +16,15 @@ export function useFormGenerator(kind: string, identifier: string) {
   const schema = useSchema(kind);
   const [osduFields, setOsduFields] = useState<OSDUField[]>([]);
   const [htmlNodes, setHtmlNodes] = useState<ReactNode[]>([]);
-  
-  
+
   /* When we have both schema and record, we can start mapping form fields. */
-    useMemo(() => {
-        if (!record || !schema) return;
-        collectNodesWithRequiredProps(schema).then((fields) => setOsduFields(fields))
-    }, [record, schema])
-  
-  
+  useMemo(() => {
+    if (!record || !schema) return;
+    collectNodesWithRequiredProps(schema).then((fields) =>
+      setOsduFields(fields)
+    );
+  }, [record, schema]);
+
   useEffect(() => {
     const nodes: ReactNode[] = [];
     const tooltipDelay = 1000; //ms
