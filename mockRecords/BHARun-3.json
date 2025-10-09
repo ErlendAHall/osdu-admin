@@ -1,0 +1,44 @@
+{
+  "id": "BHARun-3",
+  "name": "Run 3",
+  "steps": [
+    {
+      "id": "step1",
+      "type": "action",
+      "name": "Action 1",
+      "params": {
+        "param1": "value1",
+        "param2": "value2"
+      }
+    },
+    {
+      "id": "step2",
+      "type": "decision",
+      "name": "Decision 1",
+      "params": {
+        "condition": "step1.result == 'success'"
+      },
+      "trueStep": "step3",
+      "falseStep": "step4"
+    },
+    {
+      "id": "step3",
+      "type": "action",
+      "name": "Action 2",
+      "params": {
+        "param1": "value3",
+        "param2": "value4"
+      }
+    },
+    {
+      "id": "step4",
+      "type": "action",
+      "name": "Action 3",
+      "params": {
+        "param1": "value5",
+        "param2": "value6"
+      }
+    }
+  ]
+}
+

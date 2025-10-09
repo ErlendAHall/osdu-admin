@@ -1,0 +1,21 @@
+{
+  "id": "BHADataset-3",
+  "name": "BHA Dataset",
+  "description": "This is a dataset for BHA.",
+  "version": "1.0",
+  "data": [
+    {
+      "timestamp": "2023-10-01T00:00:00Z",
+      "value": 100
+    },
+    {
+      "timestamp": "2023-10-02T00:00:00Z",
+      "value": 110
+    }
+  ],
+  "metadata": {
+    "source": "Generated",
+    "license": "CC BY 4.0"
+  }
+}
+

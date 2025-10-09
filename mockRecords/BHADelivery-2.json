@@ -1,0 +1,22 @@
+{
+  "id": "BHADelivery-2",
+  "name": "BHA Delivery",
+  "description": "Delivery details for BHA.",
+  "deliveryDate": "2023-10-10",
+  "items": [
+    {
+      "itemId": "1",
+      "itemName": "Item 1",
+      "quantity": 2,
+      "price": 10.0
+    },
+    {
+      "itemId": "2",
+      "itemName": "Item 2",
+      "quantity": 1,
+      "price": 20.0
+    }
+  ],
+  "totalAmount": 40.0
+}
+
