@@ -1,17 +1,10 @@
-import {
-    Autocomplete,
-    Button,
-    Checkbox,
-    Search,
-    Tabs,
-    Typography,
-} from "@equinor/eds-core-react";
-import { useEffect, useState } from "react";
+import {Autocomplete, Button, Checkbox, Search, Tabs, Typography,} from "@equinor/eds-core-react";
+import {useEffect, useState} from "react";
 import "./styles.css";
-import { fetchSchemaNames } from "../../rest/schema.ts";
-import { getEntityRecord } from "../../rest/record.ts";
-import { useIndexedDb } from "../hooks/useIndexedDb.ts";
-import { ObjectStores } from "../../indexeddb/indexedDbHandler.ts";
+import {fetchSchemaNames} from "../../rest/schema.ts";
+import {useIndexedDb} from "../hooks/useIndexedDb.ts";
+import {ObjectStores} from "../../indexeddb/indexedDbHandler.ts";
+import {getEntityRecord} from "../../rest/record.ts";
 
 export function NewRecordPanel() {
     const [options, setOptions] = useState<string[]>([]);
@@ -58,14 +51,19 @@ export function NewRecordPanel() {
                 <form
                     onSubmit={async (e) => {
                         e.preventDefault();
-                        const record = await getEntityRecord();
-                        await writeItem(record, ObjectStores.OSDURecordStore);
+                        const searchElement = (e.target as HTMLFormElement)
+                            .elements.namedItem("identifier-search") as HTMLInputElement;
+                        if (searchElement.value) {
+                            const record = await getEntityRecord(searchElement.value);
+                            await writeItem(record, ObjectStores.OSDURecordStore);
+                        }
                     }}
                 >
                     <Typography variant="accordion_header" group="ui">
                         Open an existing record
                     </Typography>
                     <Search
+                        id={"identifier-search"}
                         placeholder={"identifier"}
                         aria-label="Search by identifier"
                     ></Search>

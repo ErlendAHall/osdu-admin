@@ -4,7 +4,7 @@ import { ObjectStores } from "../../indexeddb/indexedDbHandler.ts";
 import { OsduAdminDb } from "../../indexeddb/osduAdminDb.ts";
 
 interface IIndexedDb<T> {
-    data: T | undefined;
+    data: T[] | undefined;
     error: Error | undefined;
     loading: boolean;
     
@@ -19,6 +19,9 @@ interface IIndexedDb<T> {
         objectStore: ObjectStores
     ) => Promise<T | undefined>;
     
+    /* Retrieves all items of type T. */
+    getItems: (objectStore: ObjectStores) => Promise<T[] | undefined>
+    
     /* Writes a single record of type T to the provided object store identifier. */
     writeItem: (item: T, objectStore: ObjectStores) => Promise<boolean>;
     
@@ -30,7 +33,7 @@ interface IIndexedDb<T> {
 }
 
 export function useIndexedDb<T>(): IIndexedDb<T> {
-    const [data, setData] = useState<T>();
+    const [data, setData] = useState<T[]>([]);
     const [error, setError] = useState<Error>();
     const [loading, setIsLoading] = useState(false);
     const dbInstance = useRef<OsduAdminDb>(undefined);
@@ -50,6 +53,18 @@ export function useIndexedDb<T>(): IIndexedDb<T> {
             setIsLoading(false);
         });
     }, []);
+    
+    useEffect(() => {
+        globalThis.addEventListener("dbupdating", () => {
+            setIsLoading(true)
+        })
+    }, [])
+    
+    useEffect(() => {
+        globalThis.addEventListener("dbupdated", () => {
+            setIsLoading(false);
+        })
+    }, [])
 
     return {
         data,
@@ -69,13 +84,13 @@ export function useIndexedDb<T>(): IIndexedDb<T> {
                 tempData = (await dbInstance.current?.readRecord(
                     identifier
                 )) as T;
-                setData(tempData);
+                setData([tempData]);
                 setIsLoading(false);
             } else if (objectStore === ObjectStores.OSDUSchemaStore) {
                 tempData = (await dbInstance.current?.readSchema(
                     identifier
                 )) as T;
-                setData(tempData);
+                setData([tempData]);
                 setIsLoading(false);
             } else {
                 setError(
@@ -87,6 +102,20 @@ export function useIndexedDb<T>(): IIndexedDb<T> {
                 setIsLoading(false);
             }
 
+            return tempData;
+        },
+        getItems: async (objectStore: ObjectStores) => {
+            if (!dbInstance.current) {
+                throw new TypeError("Could not resolve the database. " +
+                    "It might be in process of being instantiated.")
+            }
+            setIsLoading(true);
+            let tempData;
+            if (objectStore === ObjectStores.OSDURecordStore) {
+                tempData = await dbInstance.current.readAllRecords() as T[];
+                setData(tempData);
+            }
+            setIsLoading(false);
             return tempData;
         },
         writeItem: async (item: T, objectStore: ObjectStores) => {

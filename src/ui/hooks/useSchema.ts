@@ -11,5 +11,5 @@ export function useSchema(kind?: string) {
         await getItem(kind, ObjectStores.OSDUSchemaStore);
     }, [kind]);
 
-    return data;
+    return data?.at(0);
 }

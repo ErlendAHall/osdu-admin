@@ -1,5 +1,5 @@
-import { IndexedDbHandler, ObjectStores } from "./indexedDbHandler.ts";
-import type { OSDURecord, OSDUSchema } from "../types/osdu.ts";
+import {IndexedDbHandler, ObjectStores} from "./indexedDbHandler.ts";
+import type {OSDURecord, OSDUSchema} from "../types/osdu.ts";
 
 export interface IOsduAdminDb {
     writeSchema: (data: OSDUSchema) => Promise<boolean>;
@@ -70,6 +70,10 @@ export class OsduAdminDb extends IndexedDbHandler implements OsduAdminDb {
         } catch {
             return false;
         }
+    }
+    
+    public async clearRecords(): Promise<unknown> {
+        return await this.deleteAll(ObjectStores.OSDURecordStore);
     }
 
     public async resolveKindFromRecord(identifier: string): Promise<string> {

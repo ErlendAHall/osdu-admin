@@ -1,6 +1,6 @@
 import type { BHARun2_0_0 } from "./types/BHARun.ts";
 import type { OSDUField } from "./types/form.ts";
-import bhaRun2_0_0Record from "./assets/BHARun2.0.0Vals.json";
+import bhaRun2_0_0Record from "./assets/mockRecords/BHARun:2.0.0:a828c845-101a-5ca0-a729-84fe19cf8841.json";
 
 /* Recursively traverses a OSDU schema to find all properties renderable in a HTML form.
    When a node has all required properties, its property name (path) is stored in field.value. */

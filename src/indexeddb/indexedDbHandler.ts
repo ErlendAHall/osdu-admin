@@ -13,17 +13,11 @@ export class IndexedDbHandler {
     dbHandler: IDBDatabase | undefined;
     IDBIdentifier: string;
     objectStores: typeof ObjectStores;
-    status: "ready" | "initializing" | "error" = "initializing";
+    status: "ready" | "initializing" | "error" | "transacting" = "initializing";
 
     constructor() {
         this.IDBIdentifier = "OSDUAdminStore";
         this.objectStores = ObjectStores;
-        //
-        // this.openDB()
-        //     .then((result) => (this.dbHandler = result.dbHandler))
-        //     .catch((error) => {
-        //         throw error;
-        //     });
     }
 
     async upsert<T>(data: IDBRecord<T>, destination: ObjectStores) {
@@ -31,15 +25,22 @@ export class IndexedDbHandler {
             if (!this.dbHandler) {
                 return reject("DBHandler is not initialised");
             }
-
+            console.group("Writing new record");
+            console.info("Where:", destination);
+            console.info("What:", data);
+            console.groupEnd();
+            
+            globalThis.dispatchEvent(new CustomEvent<IDBRequest>("dbupdating"));
+            
             const writeRequest = this.dbHandler
                 .transaction(destination, "readwrite")
                 .objectStore(destination)
                 .put(data.value, data.identifier);
 
+            
             writeRequest.onsuccess = () => {
-                resolve(`The record ${data.identifier} was updated.`);
-                globalThis.dispatchEvent(new CustomEvent("upsert"));
+                globalThis.dispatchEvent(new CustomEvent<IDBRequest>("dbupdated", {detail: writeRequest}));
+                resolve(`The record ${data.identifier} was upserted.`);
             };
 
             writeRequest.onerror = () => {
@@ -53,14 +54,18 @@ export class IndexedDbHandler {
             if (!this.dbHandler) {
                 return reject("DBHandler is not initialised");
             }
+            
+            
 
             const writeRequest = this.dbHandler
                 .transaction(destination, "readwrite")
                 .objectStore(destination)
                 .delete(identifier);
 
+            globalThis.dispatchEvent(new CustomEvent<IDBRequest>("dbupdating", {detail: writeRequest}));
+
             writeRequest.onsuccess = () => {
-                globalThis.dispatchEvent(new CustomEvent("dbdelete"));
+                globalThis.dispatchEvent(new CustomEvent<IDBRequest>("dbupdated", {detail: writeRequest}));
                 resolve(`The record ${identifier} was deleted.`);
             };
 
@@ -131,6 +136,29 @@ export class IndexedDbHandler {
                 reject(readRequest.error);
             };
         });
+    }
+    
+    async deleteAll(destination: ObjectStores) {
+        return new Promise((resolve, reject) => {
+            if (!this.dbHandler) {
+                return reject("DBHandler is not initialised.");
+            }
+            
+            const transaction = this.dbHandler.transaction(destination, "readwrite");
+            const objectStore = transaction.objectStore(destination);
+            const clearRequest = objectStore.clear();
+            
+            globalThis.dispatchEvent(new CustomEvent<IDBRequest>("dbupdating", {detail: clearRequest}));
+            
+            clearRequest.onsuccess = () => {
+                globalThis.dispatchEvent(new CustomEvent<IDBRequest>("dbupdated", {detail: clearRequest}));
+                resolve(true);
+            }
+            
+            clearRequest.onerror = (error) => {
+                reject(`Could not clear the object store ${destination} ${error}`)
+            }
+        })
     }
 
     /* Handles the process of async opening the databases and returns a this reference to this instance.. */
