@@ -64,8 +64,8 @@ export function useFormGenerator(kind?: string, identifier?: string) {
                         >
                             <Label htmlFor={id} label={field.title} />
                         </Tooltip>
-                        {field?.format === "date-time" && typeof field.value ? (
-                            <DatePicker id={id} onChange={() => {}} />
+                        {field?.format === "date-time" && typeof field.value === "string" ? (
+                            <DatePicker id={id} onChange={() => {}} value={new Date(String(field.value))}/>
                         ) : (
                             <Input
                                 id={id}
@@ -97,6 +97,24 @@ export function useFormGenerator(kind?: string, identifier?: string) {
                                 onChange={() => {}}
                             />
                         </Tooltip>
+                    </div>
+                );
+            } else {
+                const id = `typeless-input-${index}`;
+                nodes.push(
+                    <div key={field.title + index}>
+                        <Tooltip
+                            placement={"left-end"}
+                            enterDelay={tooltipDelay}
+                            title={field.description}
+                        >
+                            <Label htmlFor={id} label={field.title} />
+                        </Tooltip>
+                        <Input
+                            onChange={() => {}}
+                            id={id}
+                            value={field.value}
+                        />
                     </div>
                 );
             }

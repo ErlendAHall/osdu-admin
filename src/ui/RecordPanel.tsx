@@ -24,7 +24,7 @@ export function RecordPanel({ identifier }: RecordPanelProps) {
 
     return (
         <form>
-            <fieldset>{formFields.map((formField) => formField)}</fieldset>
+            <fieldset className="record-fields">{formFields.map((formField) => formField)}</fieldset>
             <fieldset>
                 <Paper elevation="sticky" id="elevated-menu">
                     <Tooltip title="Reset form to last save state.">

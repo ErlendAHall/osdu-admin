@@ -8,7 +8,7 @@ export async function collectNodesWithRequiredProps(
     record: OSDURecord
 ): Promise<OSDUField[]> {
     let found: OSDUField[] = [];
-    const required = ["description", "title", "type", "example"];
+    const required = ["description", "title"];
 
     function traverse(node: unknown, path: string): void {
         if (node === null || typeof node !== "object") return;

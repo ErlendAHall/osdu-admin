@@ -7,7 +7,7 @@ export type OSDUField = {
     title: string;
 
     /* Used to determine type of form field. */
-    type: string;
+    type?: string;
 
     /* Additionally describes the type*/
     format?: string;
