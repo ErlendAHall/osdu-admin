@@ -21,7 +21,7 @@ export function useFormGenerator(kind?: string, identifier?: string) {
     /* When we have both schema and record, we can start mapping form fields. */
     useMemo(() => {
         if (!record || !schema) return;
-        collectNodesWithRequiredProps(schema).then((fields) =>
+        collectNodesWithRequiredProps(schema, record).then((fields) =>
             setOsduFields(fields)
         );
     }, [record, schema]);

@@ -1,11 +1,11 @@
-import type { BHARun2_0_0 } from "./types/BHARun.ts";
 import type { OSDUField } from "./types/form.ts";
-import bhaRun2_0_0Record from "./assets/mockRecords/BHARun:2.0.0:a828c845-101a-5ca0-a729-84fe19cf8841.json";
+import type {OSDURecord, OSDUSchema} from "./types/osdu.ts";
 
 /* Recursively traverses a OSDU schema to find all properties renderable in a HTML form.
    When a node has all required properties, its property name (path) is stored in field.value. */
 export async function collectNodesWithRequiredProps(
-    root: unknown
+    root: OSDUSchema,
+    record: OSDURecord
 ): Promise<OSDUField[]> {
     let found: OSDUField[] = [];
     const required = ["description", "title", "type", "example"];
@@ -37,13 +37,13 @@ export async function collectNodesWithRequiredProps(
     }
 
     traverse(root, "root");
-    found = await collectValues(found);
+    found = await collectValues(found, record);
     return found;
 }
 
 /* Accepts a list of OSDUFields and attempts to populate their respective value properties with data. */
-export async function collectValues(osduFields: OSDUField[]) {
-    const record = bhaRun2_0_0Record as BHARun2_0_0;
+export async function collectValues(osduFields: OSDUField[], record: OSDURecord) {
+    
 
     const commonProps = [
         "id",
@@ -64,7 +64,7 @@ export async function collectValues(osduFields: OSDUField[]) {
 
     osduFieldsClone.forEach((field) => {
         const identifier = field.identifier;
-
+        
         if (commonProps.includes(identifier)) {
             // @ts-expect-error foobar
             field.value = record[identifier];
