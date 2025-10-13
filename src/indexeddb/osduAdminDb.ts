@@ -2,21 +2,21 @@ import { IndexedDbHandler, ObjectStores } from "./indexedDbHandler.ts";
 import type {
     OSDURecord,
     OSDUSchema,
-    UnsavedOSDURecord,
+    // UnsavedOSDURecord,
 } from "../types/osdu.ts";
 
 export interface IOsduAdminDb {
     writeSchema: (data: OSDUSchema) => Promise<boolean>;
     writeRecord: (data: OSDURecord) => Promise<boolean>;
-    writeRecordChanges: (data: UnsavedOSDURecord) => Promise<boolean>;
-    readRecordChanges: (identifier: string) => Promise<UnsavedOSDURecord>;
+    // writeRecordChanges: (data: UnsavedOSDURecord) => Promise<boolean>;
+    // readRecordChanges: (identifier: string) => Promise<UnsavedOSDURecord>;
     readSchema: (identifier: string) => Promise<OSDUSchema>;
     readRecord: (identifier: string) => Promise<OSDURecord>;
 }
 
 export class OsduAdminDb extends IndexedDbHandler implements IOsduAdminDb {
-    writeRecordChanges: (data: UnsavedOSDURecord) => Promise<boolean>;
-    readRecordChanges: (identifier: string) => Promise<UnsavedOSDURecord>;
+    // writeRecordChanges: (data: UnsavedOSDURecord) => Promise<boolean>;
+    // readRecordChanges: (identifier: string) => Promise<UnsavedOSDURecord>;
     public async readRecord(identifier: string): Promise<OSDURecord> {
         return (await this.read<OSDURecord>(
             identifier,

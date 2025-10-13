@@ -17,7 +17,7 @@ export class IndexedDbHandler {
     status: "ready" | "initializing" | "error" | "transacting" = "initializing";
 
     constructor() {
-        this.IDBIdentifier = "OSDUAdminStore";
+        this.IDBIdentifier = "OSDUAdminDatabase";
         this.objectStores = ObjectStores;
     }
 
@@ -199,12 +199,19 @@ export class IndexedDbHandler {
             };
 
             openRequest.onupgradeneeded = () => {
-                openRequest.result.createObjectStore(
-                    this.objectStores.OSDUSchemaStore
+                console.info("Database is being upgraded.")
+                try {
+                    openRequest.result.createObjectStore(
+                        this.objectStores.OSDUSchemaStore
+                    );
+                    openRequest.result.createObjectStore(
+                        this.objectStores.OSDURecordStore
+                    );
+                    openRequest.result.createObjectStore(
+                        this.objectStores.OSDUUnsavedRecordsStore
                 );
-                openRequest.result.createObjectStore(
-                    this.objectStores.OSDURecordStore
-                );
+                } catch {}
+                
                 this.dbHandler = openRequest.result;
                 this.status = "ready";
                 resolve(this);
