@@ -1,7 +1,8 @@
 import { IndexedDbHandler, ObjectStores } from "./indexedDbHandler.ts";
 import type {
     OSDURecord,
-    OSDUSchema, UnsavedOSDURecord,
+    OSDUSchema,
+    UnsavedOSDURecord,
     // UnsavedOSDURecord,
 } from "../types/osdu.ts";
 
@@ -68,6 +69,7 @@ export class OsduAdminDb extends IndexedDbHandler implements IOsduAdminDb {
         try {
             await this.upsert<OSDURecord>(
                 {
+                    // @ts-expect-error: TODO: type this
                     identifier: data.kind ?? data["x-osdu-schema-source"],
                     // @ts-expect-error: TODO: type this
                     value: data,
@@ -84,6 +86,7 @@ export class OsduAdminDb extends IndexedDbHandler implements IOsduAdminDb {
         try {
             await this.upsert<UnsavedOSDURecord>(
                 {
+                    // @ts-expect-error: TODO: type this
                     identifier: data.kind ?? data["x-osdu-schema-source"],
                     // @ts-expect-error: TODO: type this
                     value: data,

@@ -199,7 +199,7 @@ export class IndexedDbHandler {
             };
 
             openRequest.onupgradeneeded = () => {
-                console.info("Database is being upgraded.")
+                console.info("Database is being upgraded.");
                 try {
                     openRequest.result.createObjectStore(
                         this.objectStores.OSDUSchemaStore
@@ -209,9 +209,11 @@ export class IndexedDbHandler {
                     );
                     openRequest.result.createObjectStore(
                         this.objectStores.OSDUUnsavedRecordsStore
-                );
-                } catch {}
-                
+                    );
+                } catch(error: unknown) {
+                    console.error("Error thrown during seeding: ", error);
+                }
+
                 this.dbHandler = openRequest.result;
                 this.status = "ready";
                 resolve(this);
