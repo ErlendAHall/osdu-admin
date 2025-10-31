@@ -1,6 +1,6 @@
 import "./App.css";
 import { Tabs } from "@equinor/eds-core-react";
-import { useState } from "react";
+import { useState} from "react";
 import { useIdentifiers } from "./hooks/useIdentifiers.ts";
 import { RecordPanel } from "./RecordPanel.tsx";
 import { NewRecordPanel } from "./NewRecordPanel/NewRecordPanel.tsx";
@@ -94,4 +94,5 @@ function OSDUAdmin() {
     );
 }
 
-export default OSDUAdmin;
+
+export { OSDUAdmin };
