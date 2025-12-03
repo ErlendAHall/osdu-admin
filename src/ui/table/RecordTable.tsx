@@ -10,21 +10,20 @@ type RecordTableProps = {
 type TableData = {
     [key: string]: unknown;
 }
-export function RecordTable({kind}: RecordTableProps) {
-    const {records} = useRecordsByKind(kind)
-    
+export function RecordTable({ kind }: RecordTableProps) {
+    const { records } = useRecordsByKind(kind)
+
     const tableData: TableData = {};
-     
+
     records.forEach((record) => {
         for (let t in record.data) {
-            if (typeof record.data[t] === "string" || typeof record.data[t] === "number")
-            {
+            if (typeof record.data[t] === "string" || typeof record.data[t] === "number") {
                 tableData[t] = record.data[t];
             }
         }
     });
-        
-    
+
+
     return (
         <Table>
             <Table.Head>
