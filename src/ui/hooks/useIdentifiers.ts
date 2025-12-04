@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useIndexedDb } from "./useIndexedDb.ts";
 import { useEffectAsync } from "./useEffectAsync.ts";
-import { ObjectStores } from "../../indexeddb/indexedDbHandler.ts";
 import type { OSDURecord } from "../../types/osdu.ts";
+import { ObjectStores } from "../../types/db.ts";
 
 /* Performs a IndexedDB lookup for schemas and returns a list of record identifiers. */
 export function useIdentifiers() {

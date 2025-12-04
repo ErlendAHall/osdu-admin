@@ -1,10 +1,11 @@
-import { IndexedDbHandler, ObjectStores } from "./indexedDbHandler.ts";
+import { IndexedDbHandler } from "./indexedDbHandler.ts";
 import type {
     OSDURecord,
     OSDUSchema,
     UnsavedOSDURecord,
     // UnsavedOSDURecord,
 } from "../types/osdu.ts";
+import { ObjectStores } from "../types/db.ts";
 
 export interface IOsduAdminDb {
     writeSchema: (data: OSDUSchema) => Promise<boolean>;

@@ -22,6 +22,6 @@ export type OSDURecord = {
 
 export type RecordData = {
     [key: string]: string | number | RecordData;
-}
+};
 
 export type UnsavedOSDURecord = Partial<OSDURecord>;

@@ -2,8 +2,8 @@ import { Button, Search, Tabs, Progress } from "@equinor/eds-core-react";
 import { useState } from "react";
 import "./styles.css";
 import { useIndexedDb } from "../hooks/useIndexedDb.ts";
-import { ObjectStores } from "../../indexeddb/indexedDbHandler.ts";
 import { getEntityRecord } from "../../rest/record.ts";
+import { ObjectStores } from "../../types/db.ts";
 
 export function NewRecordPanel() {
     const { writeItem } = useIndexedDb();

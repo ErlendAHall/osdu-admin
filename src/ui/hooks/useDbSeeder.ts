@@ -65,7 +65,6 @@ export function useDbSeeder() {
                 dbInstance.writeRecord(well4),
                 // @ts-expect-error mock code
                 dbInstance.writeRecord(tubularAssembly2),
-                
             ]);
         }
         if (dbInstance?.status === "ready" && !seedingDone) {

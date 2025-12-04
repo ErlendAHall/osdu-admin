@@ -1,8 +1,8 @@
 import { useIndexedDb } from "./useIndexedDb.ts";
 import type { OSDURecord } from "../../types/osdu.ts";
 import { useEffectAsync } from "./useEffectAsync.ts";
-import { ObjectStores } from "../../indexeddb/indexedDbHandler.ts";
 import { useState } from "react";
+import { ObjectStores } from "../../types/db.ts";
 
 /*
  * Provides a reference to a single OSDU record from IndexedDB.
