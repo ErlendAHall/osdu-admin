@@ -1,8 +1,8 @@
-import {useIndexedDb} from "./useIndexedDb.ts";
-import type {OSDUSchema} from "../../types/osdu.ts";
-import {useEffectAsync} from "./useEffectAsync.ts";
-import {ObjectStores} from "../../indexeddb/indexedDbHandler.ts";
-import {useMemo, useState} from "react";
+import { useIndexedDb } from "./useIndexedDb.ts";
+import type { OSDUSchema } from "../../types/osdu.ts";
+import { useEffectAsync } from "./useEffectAsync.ts";
+import { useMemo, useState } from "react";
+import { ObjectStores } from "../../types/db.ts";
 
 /*
  * Provides a reference to a selection of OSDU schemas from IndexedDB.
@@ -42,10 +42,12 @@ export function useSchemaKinds() {
 
     useEffectAsync(async () => {
         if (dbInstance) {
-            const keys = await dbInstance.readAllKeys(ObjectStores.OSDUSchemaStore);
+            const keys = await dbInstance.readAllKeys(
+                ObjectStores.OSDUSchemaStore
+            );
             setSchemaKinds(keys.filter((key) => typeof key === "string"));
         }
-    }, [dbInstance])
-    
+    }, [dbInstance]);
+
     return schemaKinds;
 }

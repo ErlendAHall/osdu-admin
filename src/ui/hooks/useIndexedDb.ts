@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { OSDURecord, OSDUSchema } from "../../types/osdu.ts";
-import { ObjectStores } from "../../indexeddb/indexedDbHandler.ts";
 import { OsduAdminDb } from "../../indexeddb/osduAdminDb.ts";
+import { IDBStatus, ObjectStores } from "../../types/db.ts";
 
 interface IIndexedDb<T> {
     data: T[] | undefined;
     error: Error | undefined;
     loading: boolean;
+    status: IDBStatus;
     /* A reference to the running database instance.
      * Consumers should check if the instance is not undefined, but otherwise they can assume it is read and write ready.
      */
@@ -36,6 +37,9 @@ export function useIndexedDb<T>(): IIndexedDb<T> {
     const [error, setError] = useState<Error>();
     const [loading, setIsLoading] = useState(false);
     const dbInstance = useRef<OsduAdminDb>(undefined);
+    const [status, setStatus] = useState<IDBStatus>(
+        dbInstance.current?.status ?? IDBStatus.Init
+    );
 
     // Mount the instance of the OsduAdminDb as a reference.
     useEffect(() => {
@@ -53,15 +57,12 @@ export function useIndexedDb<T>(): IIndexedDb<T> {
         });
     }, []);
 
+    // Listen for db status updates.
     useEffect(() => {
-        globalThis.addEventListener("dbupdating", () => {
-            setIsLoading(true);
-        });
-    }, []);
-
-    useEffect(() => {
-        globalThis.addEventListener("dbupdated", () => {
-            setIsLoading(false);
+        globalThis.addEventListener("dbstatus", (e: Event) => {
+            if (e instanceof CustomEvent) {
+                setStatus(e.detail.status);
+            }
         });
     }, []);
 
@@ -69,6 +70,7 @@ export function useIndexedDb<T>(): IIndexedDb<T> {
         data,
         error,
         loading,
+        status: status,
         dbInstance: dbInstance.current,
         getItem: async (identifier: string, objectStore: ObjectStores) => {
             if (!dbInstance) {

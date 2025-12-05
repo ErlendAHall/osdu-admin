@@ -1,5 +1,5 @@
+import { ObjectStores } from "../../types/db.ts";
 import type { UnsavedOSDURecord } from "../../types/osdu.ts";
-import { ObjectStores } from "../../indexeddb/indexedDbHandler.ts";
 import { useIndexedDb } from "./useIndexedDb.ts";
 import merge from "lodash.merge";
 

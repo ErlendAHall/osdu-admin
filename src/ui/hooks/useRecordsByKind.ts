@@ -1,9 +1,9 @@
 /* Provides a reference to all records of a certain kind. */
-import {useIndexedDb} from "./useIndexedDb.ts";
-import type {OSDURecord} from "../../types/osdu.ts";
-import {useState} from "react";
-import {useEffectAsync} from "./useEffectAsync.ts";
-import {ObjectStores} from "../../indexeddb/indexedDbHandler.ts";
+import { useIndexedDb } from "./useIndexedDb.ts";
+import type { OSDURecord } from "../../types/osdu.ts";
+import { useState } from "react";
+import { useEffectAsync } from "./useEffectAsync.ts";
+import { ObjectStores } from "../../types/db.ts";
 
 export function useRecordsByKind(kind: string) {
     const { getItems, data, dbInstance } = useIndexedDb<OSDURecord>();

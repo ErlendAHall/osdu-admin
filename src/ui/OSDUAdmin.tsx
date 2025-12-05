@@ -1,6 +1,6 @@
 import "./App.css";
-import {Tabs} from "@equinor/eds-core-react";
-import { useState} from "react";
+import { Tabs } from "@equinor/eds-core-react";
+import { useState } from "react";
 import { useIdentifiers } from "./hooks/useIdentifiers.ts";
 import { RecordPanel } from "./RecordPanel.tsx";
 import { NewRecordPanel } from "./NewRecordPanel/NewRecordPanel.tsx";
@@ -8,8 +8,8 @@ import { useDbSeeder } from "./hooks/useDbSeeder.ts";
 import { useRecord } from "./hooks/useRecord.ts";
 import { useSchema } from "./hooks/useSchema.ts";
 import { useRecords } from "./hooks/useRecords.ts";
-import {useSchemaKinds, useSchemas} from "./hooks/useSchemas.ts";
-import {RecordTable} from "./table/RecordTable.tsx";
+import { useSchemaKinds, useSchemas } from "./hooks/useSchemas.ts";
+import { RecordTable } from "./table/RecordTable.tsx";
 
 function truncateTitle(title: string) {
     const entityName = title.split("--")[1].split(":")[0];
@@ -21,9 +21,9 @@ export function OSDUAdminWithTable() {
     useDbSeeder();
     // const identifiers = useIdentifiers();
     // const schemas = useSchemas();
-    const kinds = useSchemaKinds()
+    const kinds = useSchemaKinds();
     const [activeTab, setActiveTab] = useState(0);
-    
+
     return (
         <Tabs
             activeTab={activeTab}
@@ -42,13 +42,11 @@ export function OSDUAdminWithTable() {
                 ))}
             </Tabs.Panels>
         </Tabs>
-    )
-
+    );
 }
 
-
-
 // @ts-expect-error Just a testing component
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OSDUAdminTest() {
     const seedingIsDone = useDbSeeder();
     const { schema, loading: schemaLoading } = useSchema(
@@ -124,6 +122,5 @@ function OSDUAdmin() {
         </Tabs>
     );
 }
-
 
 export { OSDUAdmin };

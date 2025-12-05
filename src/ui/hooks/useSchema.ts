@@ -1,8 +1,8 @@
 import type { OSDUSchema } from "../../types/osdu.ts";
 import { useIndexedDb } from "./useIndexedDb.ts";
-import { ObjectStores } from "../../indexeddb/indexedDbHandler.ts";
 import { useEffectAsync } from "./useEffectAsync.ts";
 import { useState } from "react";
+import { ObjectStores } from "../../types/db.ts";
 
 export function useSchema(kind?: string) {
     const { data, getItem, dbInstance } = useIndexedDb<OSDUSchema>();

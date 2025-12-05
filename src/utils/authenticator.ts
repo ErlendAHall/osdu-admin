@@ -82,7 +82,8 @@ export class OSDUMEAuthenticator {
             authority: this.authority,
         };
 
-        const acquireResult = await this._msalInstance.acquireTokenSilent(request);
+        const acquireResult =
+            await this._msalInstance.acquireTokenSilent(request);
         this.accessToken = acquireResult.accessToken;
         return this.accessToken;
     }
@@ -97,7 +98,9 @@ export class OSDUMEAuthenticator {
             //TODO: Change this once Prod API is ready.
             return ApiUrl.Dev;
         } else {
-            throw new Error(`Could not determine api url based on the env ${env}`);
+            throw new Error(
+                `Could not determine api url based on the env ${env}`
+            );
         }
     }
 

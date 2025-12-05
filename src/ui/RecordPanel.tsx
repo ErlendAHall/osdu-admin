@@ -19,7 +19,7 @@ type RecordPanelProps = {
 
 export function RecordPanel({ identifier }: RecordPanelProps) {
     const [showDialog, setShowDialog] = useState(false);
-    const [unsavedChanges, setUnsavedChanges] = useState<UnsavedOSDURecord>();
+    const [, setUnsavedChanges] = useState<UnsavedOSDURecord>();
     const [kind, setKind] = useState<string | undefined>(undefined);
     const { dbInstance } = useIndexedDb();
     const formFields = useFormGenerator(kind, identifier);
@@ -50,19 +50,6 @@ export function RecordPanel({ identifier }: RecordPanelProps) {
         saveNewChanges(partial);
     }
 
-    function createList() {
-        const list = [];
-        for (const [key, value] of Object.entries(unsavedChanges ?? {})) {
-            list.push(
-                <li key={key}>
-                    <em>{key}</em>: {value}
-                </li>
-            );
-        }
-
-        return list;
-    }
-
     return (
         <>
             <Dialog
@@ -76,7 +63,6 @@ export function RecordPanel({ identifier }: RecordPanelProps) {
                             from the form below and is what will be posted to
                             /records
                         </p>
-                        <ul>{createList()}</ul>
                     </article>
                 </DialogContent>
                 <DialogActions>

@@ -1,10 +1,13 @@
-import {type ReactNode, StrictMode, useEffect, useState} from "react";
-import {MsalProvider, useMsalAuthentication} from "@azure/msal-react";
-import { InteractionType, InteractionRequiredAuthError} from "@azure/msal-browser";
-import {JSONTree} from "react-json-tree";
-import {createRoot} from "react-dom/client";
-import {OSDUAdminWithTable} from "./ui/OSDUAdmin.tsx";
-import {authenticator} from "./utils/authenticator.ts";
+import { type ReactNode, StrictMode, useEffect, useState } from "react";
+import { MsalProvider, useMsalAuthentication } from "@azure/msal-react";
+import {
+    InteractionType,
+    InteractionRequiredAuthError,
+} from "@azure/msal-browser";
+import { JSONTree } from "react-json-tree";
+import { createRoot } from "react-dom/client";
+import { OSDUAdminWithTable } from "./ui/OSDUAdmin.tsx";
+import { authenticator } from "./utils/authenticator.ts";
 
 type AuthProviderProps = {
     children: ReactNode;
@@ -12,7 +15,7 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
     const [loggedIn, setLoggedIn] = useState(false);
-    console.log("%cloggedIn: ","color:#f0f;", loggedIn);
+    console.log("%cloggedIn: ", "color:#f0f;", loggedIn);
     const { login, result, error } = useMsalAuthentication(
         InteractionType.Redirect,
         {

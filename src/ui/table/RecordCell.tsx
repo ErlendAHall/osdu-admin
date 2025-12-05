@@ -41,10 +41,7 @@ export function HOCRecordCell(props: HOCRecordCellProps) {
 
 /* Renders a single cell.
  * In the POC, we will only render the cell if the prop is not a complex type. */
-export function RecordCell({
-    recordProp,
-    onBeginEdit,
-}: RecordCellProps) {
+export function RecordCell({ recordProp, onBeginEdit }: RecordCellProps) {
     return (
         <Table.Cell
             variant="input"
@@ -59,7 +56,7 @@ export function RecordCell({
 export function EditableRecordCell({
     recordProp,
     onFocusLost,
-    onChange
+    onChange,
 }: RecordCellProps) {
     return (
         <Table.Cell variant="input" className="simpleCell">

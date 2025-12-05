@@ -1,37 +1,58 @@
-export type IDBRecord<T> = {
-    identifier: string;
-    value: T;
-};
-
-export enum ObjectStores {
-    OSDURecordStore = "OSDURecordStore",
-    OSDUUnsavedRecordsStore = "OSDUUnsavedRecordsStore",
-    OSDUSchemaStore = "OSDUSchemaStore",
-}
+import {
+    ObjectStores,
+    IDBStatus,
+    type IDBRecord,
+    type DBStatusEvent,
+    type DBReadiness,
+} from "../types/db";
 
 /* Provides agnostic CRUDs to IndexedDB. */
 export class IndexedDbHandler {
-    dbHandler: IDBDatabase | undefined;
+    /** @ts-expect-error: TODO: dbHandler is technically undefined until the IDB open request is resolved. */
+    dbHandler: IDBDatabase;
     IDBIdentifier: string;
     objectStores: typeof ObjectStores;
-    status: "ready" | "initializing" | "error" | "transacting" = "initializing";
+    status: IDBStatus = IDBStatus.Transacting;
 
     constructor() {
         this.IDBIdentifier = "OSDUAdminDatabase";
         this.objectStores = ObjectStores;
     }
 
+    private isReady(): DBReadiness {
+        if (!this.dbHandler) {
+            return {
+                ready: false,
+                message: "DBHandler is not initialised.",
+            };
+        } else if (this.status === IDBStatus.Upgrading) {
+            return {
+                ready: false,
+                message: "Database is currently upgrading.",
+            };
+        }
+
+        return {
+            ready: true,
+        };
+    }
+
+    createCustomEvent(
+        status: IDBStatus,
+        rest?: Record<string, unknown>
+    ): CustomEvent<DBStatusEvent> {
+        return new CustomEvent<DBStatusEvent>("dbstatus", {
+            detail: { status, ...(rest ?? undefined) },
+        });
+    }
+
     async upsert<T>(data: IDBRecord<T>, destination: ObjectStores) {
         return new Promise((resolve, reject) => {
-            if (!this.dbHandler) {
-                return reject("DBHandler is not initialised");
-            }
-            console.group("Writing new record");
-            console.info("Where:", destination);
-            console.info("What:", data);
-            console.groupEnd();
+            const status: DBReadiness = this.isReady();
 
-            globalThis.dispatchEvent(new CustomEvent<IDBRequest>("dbupdating"));
+            if (status.ready === false) {
+                reject(status.message);
+            }
 
             const writeRequest = this.dbHandler
                 .transaction(destination, "readwrite")
@@ -39,11 +60,6 @@ export class IndexedDbHandler {
                 .put(data.value, data.identifier);
 
             writeRequest.onsuccess = () => {
-                globalThis.dispatchEvent(
-                    new CustomEvent<IDBRequest>("dbupdated", {
-                        detail: writeRequest,
-                    })
-                );
                 resolve(`The record ${data.identifier} was upserted.`);
             };
 
@@ -55,8 +71,10 @@ export class IndexedDbHandler {
 
     async delete(identifier: string, destination: ObjectStores) {
         return new Promise((resolve, reject) => {
-            if (!this.dbHandler) {
-                return reject("DBHandler is not initialised");
+            const status: DBReadiness = this.isReady();
+
+            if (status.ready === false) {
+                reject(status.message);
             }
 
             const writeRequest = this.dbHandler
@@ -64,18 +82,7 @@ export class IndexedDbHandler {
                 .objectStore(destination)
                 .delete(identifier);
 
-            globalThis.dispatchEvent(
-                new CustomEvent<IDBRequest>("dbupdating", {
-                    detail: writeRequest,
-                })
-            );
-
             writeRequest.onsuccess = () => {
-                globalThis.dispatchEvent(
-                    new CustomEvent<IDBRequest>("dbupdated", {
-                        detail: writeRequest,
-                    })
-                );
                 resolve(`The record ${identifier} was deleted.`);
             };
 
@@ -87,8 +94,10 @@ export class IndexedDbHandler {
 
     async read<T>(identifier: string, destination: ObjectStores) {
         return new Promise((resolve, reject) => {
-            if (!this.dbHandler) {
-                return reject("DBHandler is not initialised.");
+            const status: DBReadiness = this.isReady();
+
+            if (status.ready === false) {
+                reject(status.message);
             }
 
             const readRequest = this.dbHandler
@@ -108,8 +117,10 @@ export class IndexedDbHandler {
 
     async readAll<T>(destination: ObjectStores): Promise<Array<T>> {
         return new Promise((resolve, reject) => {
-            if (!this.dbHandler) {
-                return reject("DBHandler is not initialised.");
+            const status: DBReadiness = this.isReady();
+
+            if (status.ready === false) {
+                reject(status.message);
             }
 
             const readRequest = this.dbHandler
@@ -129,8 +140,10 @@ export class IndexedDbHandler {
 
     async readAllKeys(destination: ObjectStores): Promise<IDBValidKey[]> {
         return new Promise((resolve, reject) => {
-            if (!this.dbHandler) {
-                return reject("DBHandler is not initialised.");
+            const status: DBReadiness = this.isReady();
+
+            if (status.ready === false) {
+                reject(status.message);
             }
 
             const readRequest = this.dbHandler
@@ -150,8 +163,10 @@ export class IndexedDbHandler {
 
     async deleteAll(destination: ObjectStores) {
         return new Promise((resolve, reject) => {
-            if (!this.dbHandler) {
-                return reject("DBHandler is not initialised.");
+            const status: DBReadiness = this.isReady();
+
+            if (status.ready === false) {
+                reject(status.message);
             }
 
             const transaction = this.dbHandler.transaction(
@@ -161,18 +176,7 @@ export class IndexedDbHandler {
             const objectStore = transaction.objectStore(destination);
             const clearRequest = objectStore.clear();
 
-            globalThis.dispatchEvent(
-                new CustomEvent<IDBRequest>("dbupdating", {
-                    detail: clearRequest,
-                })
-            );
-
             clearRequest.onsuccess = () => {
-                globalThis.dispatchEvent(
-                    new CustomEvent<IDBRequest>("dbupdated", {
-                        detail: clearRequest,
-                    })
-                );
                 resolve(true);
             };
 
@@ -187,20 +191,70 @@ export class IndexedDbHandler {
     /* Handles the process of async opening the databases and returns a this reference to this instance.. */
     public async openDB(): Promise<this> {
         return new Promise((resolve, reject) => {
+            globalThis.dispatchEvent(
+                new CustomEvent<IDBStatus>(IDBStatus.Init)
+            );
+
             const openRequest = globalThis.indexedDB.open(
                 this.IDBIdentifier,
-                1
+                10
             );
 
             openRequest.onsuccess = () => {
-                this.status = "ready";
+                this.status = IDBStatus.Ready;
+                globalThis.dispatchEvent(
+                    this.createCustomEvent(IDBStatus.Ready)
+                );
                 this.dbHandler = openRequest.result;
                 resolve(this);
             };
 
-            openRequest.onupgradeneeded = () => {
-                console.info("Database is being upgraded.");
-                try {
+            openRequest.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+                console.info(
+                    `Database is being upgraded to ${event.newVersion}`
+                );
+                this.status = IDBStatus.Upgrading;
+                globalThis.dispatchEvent(
+                    this.createCustomEvent(IDBStatus.Upgrading)
+                );
+
+                const existingObjectStores =
+                    openRequest.transaction?.objectStoreNames;
+
+                // We already have some object stores created. Ensure all is created.
+                //TODO: this can be done better.
+                if (existingObjectStores && existingObjectStores.length > 0) {
+                    if (
+                        !existingObjectStores.contains(
+                            this.objectStores.OSDUSchemaStore
+                        )
+                    ) {
+                        openRequest.result.createObjectStore(
+                            this.objectStores.OSDUSchemaStore
+                        );
+                    }
+
+                    if (
+                        !existingObjectStores.contains(
+                            this.objectStores.OSDURecordStore
+                        )
+                    ) {
+                        openRequest.result.createObjectStore(
+                            this.objectStores.OSDURecordStore
+                        );
+                    }
+
+                    if (
+                        !existingObjectStores.contains(
+                            this.objectStores.OSDUUnsavedRecordsStore
+                        )
+                    ) {
+                        openRequest.result.createObjectStore(
+                            this.objectStores.OSDUUnsavedRecordsStore
+                        );
+                    }
+                    // We have no object stores created. Create them all.
+                } else {
                     openRequest.result.createObjectStore(
                         this.objectStores.OSDUSchemaStore
                     );
@@ -210,17 +264,21 @@ export class IndexedDbHandler {
                     openRequest.result.createObjectStore(
                         this.objectStores.OSDUUnsavedRecordsStore
                     );
-                } catch (error: unknown) {
-                    console.error("Error thrown during seeding: ", error);
                 }
 
                 this.dbHandler = openRequest.result;
-                this.status = "ready";
+                this.status = IDBStatus.Ready;
+                globalThis.dispatchEvent(
+                    this.createCustomEvent(IDBStatus.Ready)
+                );
                 resolve(this);
             };
 
             openRequest.onerror = () => {
-                this.status = "error";
+                this.status = IDBStatus.Error;
+                globalThis.dispatchEvent(
+                    this.createCustomEvent(IDBStatus.Error)
+                );
                 reject(openRequest.error);
             };
         });
