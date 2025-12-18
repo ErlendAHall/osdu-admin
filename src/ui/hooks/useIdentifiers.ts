@@ -5,7 +5,7 @@ import type { OSDURecord } from "../../types/osdu.ts";
 import { ObjectStores } from "../../types/db.ts";
 
 /* Performs a IndexedDB lookup for schemas and returns a list of record identifiers. */
-export function useIdentifiers() {
+export function useIdentifiers(byKind?: string) {
     const [identifiers, setIdentifiers] = useState<string[]>([]);
     const { data, getItems, dbInstance, loading } = useIndexedDb<OSDURecord>();
 
@@ -14,18 +14,20 @@ export function useIdentifiers() {
         if (dbInstance) {
             await getItems(ObjectStores.OSDURecordStore);
         }
-    }, [loading]);
-
-    useEffectAsync(async () => {
-        if (dbInstance) {
-            await getItems(ObjectStores.OSDURecordStore);
-        }
-    }, [dbInstance]);
+    }, [loading, dbInstance]);
 
     useEffect(() => {
         if (!data) return;
-        setIdentifiers(data?.map((record) => record.id));
-    }, [data]);
+        if (byKind) {
+            setIdentifiers(
+                data
+                    .filter((record) => record.kind === byKind)
+                    .map((record) => record.id)
+            );
+        } else {
+            setIdentifiers(data.map((record) => record.id));
+        }
+    }, [byKind, data]);
 
     return identifiers;
 }

@@ -1,44 +1,24 @@
-import { useRecordsByKind } from "../hooks/useRecordsByKind.ts";
 import { Table } from "@equinor/eds-core-react";
 import { RecordRow } from "./RecordRow.tsx";
+import { useIdentifiers } from "../hooks/useIdentifiers.ts";
 
 type RecordTableProps = {
     kind: string;
 };
 
-type TableData = {
-    [key: string]: unknown;
-};
 export function RecordTable({ kind }: RecordTableProps) {
-    const { records } = useRecordsByKind(kind);
-
-    const tableData: TableData = {};
-
-    records.forEach((record) => {
-        for (const t in record.data) {
-            if (
-                typeof record.data[t] === "string" ||
-                typeof record.data[t] === "number"
-            ) {
-                tableData[t] = record.data[t];
-            }
-        }
-    });
+    const identifiers = useIdentifiers(kind);
 
     return (
         <Table>
             <Table.Head>
-                <Table.Row>
-                    {Object.keys(tableData).map((dt) => (
-                        <Table.Cell key={dt}>{dt}</Table.Cell>
-                    ))}
-                </Table.Row>
+                <Table.Row>{/*How to get the table headers here?*/}</Table.Row>
             </Table.Head>
             <Table.Body>
-                {Object.values(tableData).map((_, index) => (
+                {identifiers.map((recordId, index) => (
                     <RecordRow
-                        key={records[index]?.id ?? index}
-                        record={records[index]}
+                        key={recordId ?? index}
+                        recordIdentifier={recordId}
                     />
                 ))}
             </Table.Body>

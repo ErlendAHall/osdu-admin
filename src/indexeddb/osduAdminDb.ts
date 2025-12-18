@@ -89,13 +89,16 @@ export class OsduAdminDb extends IndexedDbHandler implements IOsduAdminDb {
         }
     }
 
-    public async writeUnsavedSchema(data: OSDUSchema): Promise<boolean> {
+    public async writeUnsavedRecord(data: OSDURecord): Promise<boolean> {
         try {
+            if (!data.id)
+                throw new Error("Could not save an unsaved record.", {
+                    cause: "ID is missing.",
+                });
+
             await this.upsert<UnsavedOSDURecord>(
                 {
-                    // @ts-expect-error: TODO: type this
-                    identifier: data.kind ?? data["x-osdu-schema-source"],
-                    // @ts-expect-error: TODO: type this
+                    identifier: data.id,
                     value: data,
                 },
                 this.objectStores.OSDUUnsavedRecordsStore

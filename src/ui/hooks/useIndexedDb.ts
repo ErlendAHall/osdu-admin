@@ -155,8 +155,8 @@ export function useIndexedDb<T>(): IIndexedDb<T> {
                     )) ?? false;
             } else if (objectStore === ObjectStores.OSDUUnsavedRecordsStore) {
                 writeStatus =
-                    (await dbInstance.current?.writeSchema(
-                        item as OSDUSchema
+                    (await dbInstance.current?.writeUnsavedRecord(
+                        item as OSDURecord
                     )) ?? false;
             }
 
