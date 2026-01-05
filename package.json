@@ -17,6 +17,7 @@
         "@azure/msal-browser": "^4.26.0",
         "@azure/msal-react": "^3.0.21",
         "@equinor/eds-core-react": "^0.49.0",
+        "@equinor/eds-icons": "^1.1.0",
         "lodash.merge": "^4.6.2",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
