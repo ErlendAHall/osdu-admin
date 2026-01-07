@@ -1,26 +1,22 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react";
-import {
-    DatePicker,
-    Input,
-    Label,
-    Switch,
-    Tooltip,
-} from "@equinor/eds-core-react";
+import { DatePicker, Input, Switch, Tooltip } from "@equinor/eds-core-react";
 import type { OSDUField } from "../../types/form.ts";
 import { collectNodesWithRequiredProps } from "../../traverser.ts";
 import { useRecord } from "./useRecord.ts";
 import { useSchema } from "./useSchema.ts";
+import { RecordLabel } from "../Label/Label.tsx";
 
 /* Accepts a kind and an identifier and creates a list of HTML form fields ready for DOM. */
 export function useFormGenerator(kind?: string, identifier?: string) {
     const { record } = useRecord(identifier);
     const { schema } = useSchema(kind);
+    console.log("%c⧭", "color: #731d6d", schema);
     const [osduFields, setOsduFields] = useState<OSDUField[]>([]);
     const [htmlNodes, setHtmlNodes] = useState<ReactNode[]>([]);
 
-    /* When we have both schema and record, we can start mapping form fields. */
+    /* When we have schema, we can start mapping form fields. */
     useMemo(() => {
-        if (!record || !schema) return;
+        if (!schema) return;
         collectNodesWithRequiredProps(schema, record).then((fields) =>
             setOsduFields(fields)
         );
@@ -28,7 +24,7 @@ export function useFormGenerator(kind?: string, identifier?: string) {
 
     useEffect(() => {
         const nodes: ReactNode[] = [];
-        const tooltipDelay = 1000; //ms
+        const tooltipDelay = 500; //ms
 
         osduFields.forEach((field, index) => {
             // Field is integer or number.
@@ -36,13 +32,7 @@ export function useFormGenerator(kind?: string, identifier?: string) {
                 const id = `number-input-${index}`;
                 nodes.push(
                     <div key={field.title + index}>
-                        <Tooltip
-                            placement={"left-end"}
-                            enterDelay={tooltipDelay}
-                            title={field.description}
-                        >
-                            <Label htmlFor={id} label={field.title} />
-                        </Tooltip>
+                        <RecordLabel id={id} field={field} />
                         <Input
                             onChange={() => {}}
                             type="number"
@@ -57,13 +47,7 @@ export function useFormGenerator(kind?: string, identifier?: string) {
                 const id = `string-input-${index}`;
                 nodes.push(
                     <div key={field.title + index}>
-                        <Tooltip
-                            placement={"left"}
-                            enterDelay={tooltipDelay}
-                            title={field.description}
-                        >
-                            <Label htmlFor={id} label={field.title} />
-                        </Tooltip>
+                        <RecordLabel id={id} field={field} />
                         {field?.format === "date-time" &&
                         typeof field.value === "string" ? (
                             <DatePicker
@@ -108,13 +92,7 @@ export function useFormGenerator(kind?: string, identifier?: string) {
                 const id = `typeless-input-${index}`;
                 nodes.push(
                     <div key={field.title + index}>
-                        <Tooltip
-                            placement={"left-end"}
-                            enterDelay={tooltipDelay}
-                            title={field.description}
-                        >
-                            <Label htmlFor={id} label={field.title} />
-                        </Tooltip>
+                        <RecordLabel id={id} field={field} />
                         <Input
                             onChange={() => {}}
                             id={field.identifier}
