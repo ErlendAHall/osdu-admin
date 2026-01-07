@@ -18,6 +18,9 @@ export type OSDUField = {
     /* To aid the user in how the attribute is built. */
     example?: string;
 
+    /* The record path */
+    path: string;
+
     /* The field value. */
     value: string | number | boolean | null | undefined;
 };

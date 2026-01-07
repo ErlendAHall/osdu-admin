@@ -2,22 +2,31 @@ import { ObjectStores } from "../../types/db.ts";
 import type { UnsavedOSDURecord } from "../../types/osdu.ts";
 import { useIndexedDb } from "./useIndexedDb.ts";
 import merge from "lodash.merge";
+import { useEffectAsync } from "./useEffectAsync.ts";
 
 export function useUnsavedRecord(identifier: string) {
-    const { data, loading, writeItem } = useIndexedDb<UnsavedOSDURecord>();
+    const {
+        data: masterData,
+        loading,
+        writeItem,
+    } = useIndexedDb<UnsavedOSDURecord>();
+    const record = masterData?.at(0);
+
+    useEffectAsync(async () => {
+        if (!record) {
+            await saveNewChanges({ id: undefined });
+        }
+    }, [masterData]);
 
     async function saveNewChanges(partial: UnsavedOSDURecord) {
         if (partial) {
             if (!partial.id) partial.id = identifier;
 
             // Merge changes.
-            const dataToBeSaved = merge(data, partial);
-            await writeItem(
-                dataToBeSaved,
-                ObjectStores.OSDUUnsavedRecordsStore
-            );
+            const newRecord = merge(record ?? {}, partial);
+            await writeItem(newRecord, ObjectStores.OSDUUnsavedRecordsStore);
         }
     }
 
-    return { data, loading, saveNewChanges };
+    return { data: masterData, loading, saveNewChanges };
 }

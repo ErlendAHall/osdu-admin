@@ -32,6 +32,8 @@ export async function collectNodesWithRequiredProps(
         // The property path will have dotted notation from the recursive traverse. Set the last suffix as the identifier.
         if (hasAllRequiredProps) {
             obj.identifier = path.split(".").at(-1)!;
+            obj.path =
+                path === "root" ? "root" : path.split(".")?.slice(1).join(".");
             found.push(obj);
         }
 

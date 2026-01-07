@@ -10,7 +10,6 @@ import { RecordLabel } from "../Label/Label.tsx";
 export function useFormGenerator(kind?: string, identifier?: string) {
     const { record } = useRecord(identifier);
     const { schema } = useSchema(kind);
-    console.log("%c⧭", "color: #731d6d", schema);
     const [osduFields, setOsduFields] = useState<OSDUField[]>([]);
     const [htmlNodes, setHtmlNodes] = useState<ReactNode[]>([]);
 
@@ -38,6 +37,7 @@ export function useFormGenerator(kind?: string, identifier?: string) {
                             type="number"
                             id={field.identifier}
                             value={field.value}
+                            data-path={field.path}
                         />
                     </div>
                 );
@@ -61,6 +61,7 @@ export function useFormGenerator(kind?: string, identifier?: string) {
                                 autoComplete="off"
                                 value={field.value}
                                 onChange={() => {}}
+                                data-path={field.path}
                             />
                         )}
                     </div>
@@ -84,6 +85,7 @@ export function useFormGenerator(kind?: string, identifier?: string) {
                                 label={field.title}
                                 checked={field.value}
                                 onChange={() => {}}
+                                data-path={field.path}
                             />
                         </Tooltip>
                     </div>
@@ -97,6 +99,7 @@ export function useFormGenerator(kind?: string, identifier?: string) {
                             onChange={() => {}}
                             id={field.identifier}
                             value={field.value}
+                            data-path={field.path}
                         />
                     </div>
                 );
