@@ -5,14 +5,15 @@ import type { OSDURecord, OSDUSchema } from "./types/osdu.ts";
    When a node has all required properties, its property name (path) is stored in field.value. */
 export async function collectNodesWithRequiredProps(
     root: OSDUSchema,
-    record: OSDURecord
+    record?: OSDURecord
 ): Promise<OSDUField[]> {
     let found: OSDUField[] = [];
     const required = ["description", "title"];
 
     function traverse(node: unknown, path: string): void {
-        if (node === null || typeof node !== "object") return;
+        if (node == null || typeof node !== "object") return;
 
+        // The node is an array type. Iterate through it and collect child nodes.
         if (Array.isArray(node)) {
             for (let i = 0; i < node.length; i++) {
                 traverse(node[i], `${path}[${i}]`);
@@ -20,24 +21,34 @@ export async function collectNodesWithRequiredProps(
             return;
         }
 
+        // The node is an object.
         const obj = node as OSDUField;
 
+        // Check if the object have all required properties.
         const hasAllRequiredProps = required.every((k) =>
             Object.prototype.hasOwnProperty.call(obj, k)
         );
 
+        // The property path will have dotted notation from the recursive traverse. Set the last suffix as the identifier.
         if (hasAllRequiredProps) {
             obj.identifier = path.split(".").at(-1)!;
             found.push(obj);
         }
 
+        // The object may also be a collection of other potential candidate nodes.
         for (const [childKey, value] of Object.entries(obj)) {
             traverse(value, path ? `${path}.${childKey}` : childKey);
         }
     }
 
+    // Algo starts here.
     traverse(root, "root");
-    found = await collectValues(found, record);
+
+    // If a record is provided, attempt to set node.value for all the resolved OSDU fields.
+    if (record) {
+        found = await collectValues(found, record);
+    }
+
     return found;
 }
 
@@ -62,7 +73,6 @@ export async function collectValues(
 
     //TODO: write a copy to IndexedDB.
     const osduFieldsClone = structuredClone(osduFields);
-
     osduFieldsClone.forEach((field) => {
         const identifier = field.identifier;
 
